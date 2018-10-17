@@ -1,3 +1,4 @@
+// MySQL
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -8,15 +9,24 @@ var con = mysql.createConnection({
 
 con.connect(function(err) {
     if (err) throw err;
-    console.log("Connected!");
 
     con.query("USE Portfolio;", function (err, result) {
         if (err) throw err;
-        console.log("Using Portfolio...");
-    });
-
-    con.query("SELECT * FROM User;", function (err, result) {
-        if (err) throw err;
-        console.log(result[0].FirstName);
+        console.log("-- Successfully connected to Portfolio Database --");
     });
 });
+
+
+// Server
+var express = require('express');
+var app = express();
+
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res){
+    res.render('index');
+});
+
+app.listen(3000);
+console.log('Listening to port 3000');
+console.log('Connect to http://127.0.0.1:3000/');
