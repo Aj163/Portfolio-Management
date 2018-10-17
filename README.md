@@ -35,7 +35,7 @@ Or alternatively copy and paste the commands.
   - `mysql`
   - `ejs`
 
-To run the server
+#### To run the server
 Move to the `/PortfolioManagement/` directory and run the following command
 ```
 $ node app
