@@ -1,16 +1,16 @@
 // MySQL
 var mysql = require('mysql');
 
-var con = mysql.createConnection({
+var dbms = mysql.createConnection({
     host: "localhost",
     user: "admin",
     password: "admin"
 });
 
-con.connect(function(err) {
+dbms.connect(function(err) {
     if (err) throw err;
 
-    con.query("USE Portfolio;", function (err, result) {
+    dbms.query("USE Portfolio;", function (err, result) {
         if (err) throw err;
         console.log("-- Successfully connected to Portfolio Database --");
     });
@@ -24,7 +24,14 @@ var app = express();
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res){
-    res.render('index');
+    dbms.query("SHOW TABLES;", function (err, result, fields) {
+        if (err) throw err;
+        res.render('index', {data: result});
+    });
+});
+
+app.get('/:anything', function(req, res){
+    res.render('404');
 });
 
 app.listen(3000);
