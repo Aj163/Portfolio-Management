@@ -94,17 +94,18 @@ CREATE TABLE UserCurrencies (
 	Amount FLOAT(7, 2) NOT NULL CHECK (Amount > 0)
 );
 
+-- ###########################################################################
 -- Deleting all tables
 
-DROP TABLE User;
-DROP TABLE Shares;
-DROP TABLE Currency;
-DROP TABLE ShareHistory;
-DROP TABLE WatchList;
-DROP TABLE BuyShare;
-DROP TABLE SellShare;
-DROP TABLE CurrentShares;
-DROP TABLE UserHistory;
-DROP TABLE CurrencyHistory;
-DROP TABLE CurrencyExchange;
-DROP TABLE UserCurrencies;
+-- DROP TABLE User;
+-- DROP TABLE Shares;
+-- DROP TABLE Currency;
+-- DROP TABLE ShareHistory;
+-- DROP TABLE WatchList;
+-- DROP TABLE BuyShare;
+-- DROP TABLE SellShare;
+-- DROP TABLE CurrentShares;
+-- DROP TABLE UserHistory;
+-- DROP TABLE CurrencyHistory;
+-- DROP TABLE CurrencyExchange;
+-- DROP TABLE UserCurrencies;
