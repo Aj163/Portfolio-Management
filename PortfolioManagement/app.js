@@ -12,7 +12,7 @@ dbms.connect(function(err) {
 
     dbms.query("USE Portfolio;", function (err, result) {
         if (err) throw err;
-        console.log("-- Successfully connected to Portfolio Database --");
+        console.log(">> Successfully connected to Portfolio Database");
     });
 });
 
@@ -24,9 +24,13 @@ var app = express();
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res){
-    dbms.query("SHOW TABLES;", function (err, result, fields) {
-        if (err) throw err;
-        res.render('index', {data: result});
+    res.render('index');
+});
+
+app.get('/watch-list', function(req, res){
+    dbms.query("SELECT ShareName FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol;", function(err, result, fields) {
+        if(err) throw err;
+        res.render('watch_list', {data: result});
     });
 });
 
@@ -35,5 +39,6 @@ app.get('/:anything', function(req, res){
 });
 
 app.listen(3000);
-console.log('Listening to port 3000');
 console.log('Connect to http://127.0.0.1:3000/');
+
+// Alpha-Vantage API Key : ZQBDTSMTGR1O70Q9

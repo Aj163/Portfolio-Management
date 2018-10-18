@@ -14,8 +14,9 @@
     </head>
 
     <body>
-        <h1>Welcome to the most awesome website on the net!</h1>
-        <p>You won't find a better website anywhere else!</p>
-        <h6><a href="/watch-list" style="color: white">My Watch List</a></h6>
+        <h1>My Watch List!</h1>
+        <% data.forEach(function(item) { %>
+            <li><%= item.ShareName %></li>
+        <% }); %>
     </body>
 </html>
