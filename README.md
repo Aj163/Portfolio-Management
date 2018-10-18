@@ -34,6 +34,7 @@ Or alternatively copy and paste the commands.
   - `express`
   - `mysql`
   - `ejs`
+  - `get-json`
 
 #### To run the server
 Move to the `/PortfolioManagement/` directory and run the following command
