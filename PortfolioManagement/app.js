@@ -1,4 +1,5 @@
-// MySQL
+// ################################################################### MySQL
+
 var mysql = require('mysql');
 
 var dbms = mysql.createConnection({
@@ -17,12 +18,12 @@ dbms.connect(function(err) {
 });
 
 
-// Server
+// ################################################################# Server
+
 var express = require('express');
 var app = express();
 var getJSON = require('get-json');
 var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({extended: true});
 var userID = -1;
 
 app.set('view engine', 'ejs');
@@ -31,15 +32,29 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+//@@ TODO: Multiple users
+// console.log(req.connection.remoteAddress);
+// console.log(req.connection.remotePort);
+
+// Home Page
 app.get('/', function(req, res) {
-    res.render('index');
+    if (userID == -1) {
+        res.redirect('/login');
+    }
+    else {
+        res.render('index');
+    }
 });
 
+
+// Login
 app.get('/login', function(req, res) {
     res.render('login', {message: "", username: ""});
 });
 
-app.post('/login', urlencodedParser, function(req, res){
+
+// Authenticating user
+app.post('/login', function(req, res) {
     var query = "SELECT UserID, Password FROM User WHERE Username=\"" + req.body.username + "\";";
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
@@ -57,44 +72,114 @@ app.post('/login', urlencodedParser, function(req, res){
 });
 
 
-app.get('/watch-list', function(req, res){
-    var query = "SELECT ShareName, Symbol FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol;";
-    dbms.query(query, function(err, result, fields) {
-        if (err) throw err;
-        res.render('watch_list', {data: result});
-    });
+// Signup
+app.get('/signup', function(req, res) {
+    res.render('signup', {message: "", username: "", firstname: "", lastname: ""});
 });
 
-app.get('/stock-list', function(req, res){
-    var query = "SELECT ShareName, Symbol FROM Shares;";
+
+// Authenticating user
+app.post('/signup', function(req, res) {
+    var query = "SELECT Username FROM User WHERE Username=\"" + req.body.username + "\";";
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
-        res.render('stock_list', {data: result});
-    });
-});
-
-app.get('/share/:company', function(req, res){
-    getJSON('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + req.params.company + '&apikey=ZQBDTSMTGR1O70Q9', function(err, data) {
-        if (err) throw err;
-        if (data["Error Message"]) {
-            res.render('404');
+        if(req.body.username == "") {
+            res.render('signup', {message: "Username is empty", username: req.body.username, 
+                firstname: req.body.firstname, lastname: req.body.lastname})
+        }
+        else if(result.length == 1) {
+            res.render('signup', {message: "Username exists", username: req.body.username, 
+                firstname: req.body.firstname, lastname: req.body.lastname})
+        }
+        else if(req.body.password != req.body.confirm_password) {
+            res.render('signup', {message: "Passwords don't match", username: req.body.username, 
+                firstname: req.body.firstname, lastname: req.body.lastname})
+        }
+        else if(req.body.firstname == "") {
+            res.render('signup', {message: "First name is empty", username: req.body.username, 
+                firstname: req.body.firstname, lastname: req.body.lastname})
         }
         else {
-            var query = "SELECT ShareName FROM Shares WHERE Symbol=\"" + req.params.company + "\";";
-            dbms.query(query, function(err, resultname, fields) {
+            var insertQuery="INSERT INTO User(Username, Password, FirstName, LastName)" + 
+                " VALUES(\"" + req.body.username + "\", \"" + req.body.password + "\", \"" +
+                req.body.firstname + "\", \"" + req.body.lastname + "\");";
+
+            dbms.query(insertQuery, function(err, result, fields) {
                 if (err) throw err;
 
-                var existsQuery = "SELECT ShareSymbol FROM WatchList WHERE UserID=3 AND ShareSymbol=\"" + req.params.company + "\";";
-                dbms.query(existsQuery, function(err, result, fields) {
+                var IDquery = "SELECT UserID FROM User WHERE Username=\"" + req.body.username + "\";";
+                dbms.query(IDquery, function(err, result, fields) {
                     if (err) throw err;
-                    res.render('stock', {data: data, name: resultname, symbol: req.params.company, inWatchList: result.length > 0});
+
+                    userID = result[0]["UserID"];
+                    res.redirect('/');
                 });
             });
         }
     });
 });
 
-app.post('/add', urlencodedParser, function(req, res){
+
+// Watch List
+app.get('/watch-list', function(req, res) {
+    if (userID == -1) {
+        res.redirect('/login');
+    }
+    else {
+        var query = "SELECT ShareName, Symbol FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol;";
+        dbms.query(query, function(err, result, fields) {
+            if (err) throw err;
+            res.render('watch_list', {data: result});
+        });
+    }
+});
+
+
+// Stock List
+app.get('/stock-list', function(req, res) {
+    if (userID == -1) {
+        res.redirect('/login');
+    }
+    else {
+        var query = "SELECT ShareName, Symbol FROM Shares;";
+        dbms.query(query, function(err, result, fields) {
+            if (err) throw err;
+            res.render('stock_list', {data: result});
+        });
+    }
+});
+
+
+// Stock page
+app.get('/share/:company', function(req, res) {
+    if (userID == -1) {
+        res.redirect('/login');
+    }
+    else {
+        getJSON('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + req.params.company + '&apikey=ZQBDTSMTGR1O70Q9', function(err, data) {
+            if (err) throw err;
+            if (data["Error Message"]) {
+                res.render('404');
+            }
+            else {
+                var query = "SELECT ShareName FROM Shares WHERE Symbol=\"" + req.params.company + "\";";
+                dbms.query(query, function(err, resultname, fields) {
+                    if (err) throw err;
+
+                    var existsQuery = "SELECT ShareSymbol FROM WatchList WHERE UserID=3 AND ShareSymbol=\"" + req.params.company + "\";";
+                    dbms.query(existsQuery, function(err, result, fields) {
+                        if (err) throw err;
+                        res.render('stock', {data: data, name: resultname, symbol: req.params.company, inWatchList: result.length > 0});
+                    });
+                });
+            }
+        });
+    }
+});
+
+
+// Add to watch list
+app.post('/add', function(req, res) {
     var query = "INSERT INTO WatchList VALUES(3, \"" + req.body.symbol + "\");";
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
@@ -102,7 +187,9 @@ app.post('/add', urlencodedParser, function(req, res){
     });
 });
 
-app.post('/remove', urlencodedParser, function(req, res){
+
+// Remove from watch list
+app.post('/remove', function(req, res) {
     var query = "DELETE FROM WatchList WHERE UserID=3 AND ShareSymbol=\"" + req.body.symbol + "\";";
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
@@ -110,7 +197,9 @@ app.post('/remove', urlencodedParser, function(req, res){
     });
 });
 
-app.get('/:anything', function(req, res){
+
+// 404 page not found
+app.get('/:anything', function(req, res) {
     res.render('404');
 });
 

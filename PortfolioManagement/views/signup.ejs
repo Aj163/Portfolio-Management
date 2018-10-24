@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+        	Portfolio
+        </title>
+        <style>
+                body{background: #003300; font-family: ubuntu; color: #ffffff; padding: 30px;}
+                h1{font-size: 48px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+                p{font-size: 25px; text-align: center;}
+        </style>
+    </head>
+
+    <body>
+        <h2 style="text-align: center; font-size: 40px;">Welcome to Portfolio Management</h2>
+        <p><%= message %></p>
+        <div style="text-align: center;">
+            <form action="/signup" method="POST">
+                <p>Username <input type="input" name="username", value="<%= username %>"></p>
+                <p>First Name <input type="input" name="firstname", value="<%= firstname %>"></p>
+                <p>Last Name <input type="input" name="lastname", value="<%= lastname %>"></p>
+                <p>Password <input type="password" name="password"></p>
+                <p>Confirm Password <input type="password" name="confirm_password"></p>
+                <br>
+                <input type="submit" name="Signup" value="Sign Up">
+            </form>
+        </div>
+    </body>
+</html>
