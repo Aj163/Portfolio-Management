@@ -24,7 +24,7 @@ var express = require('express');
 var app = express();
 var getJSON = require('get-json');
 var bodyParser = require('body-parser');
-var userID = -1;
+var userIDs = {};
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -34,11 +34,10 @@ app.use(bodyParser.json());
 
 //@@ TODO: Multiple users
 // console.log(req.connection.remoteAddress);
-// console.log(req.connection.remotePort);
 
 // Home Page
 app.get('/', function(req, res) {
-    if (userID == -1) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
         res.redirect('/login');
     }
     else {
@@ -65,7 +64,7 @@ app.post('/login', function(req, res) {
             res.render('login', {message: "Wrong Password", username: req.body.username});
         }
         else {
-            userID = result[0]["UserID"];
+            userIDs[req.connection.remoteAddress] = result[0]["UserID"];
             res.redirect('/');
         }
     });
@@ -111,7 +110,7 @@ app.post('/signup', function(req, res) {
                 dbms.query(IDquery, function(err, result, fields) {
                     if (err) throw err;
 
-                    userID = result[0]["UserID"];
+                    userIDs[req.connection.remoteAddress] = result[0]["UserID"];
                     res.redirect('/');
                 });
             });
@@ -122,7 +121,7 @@ app.post('/signup', function(req, res) {
 
 // Watch List
 app.get('/watch-list', function(req, res) {
-    if (userID == -1) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
         res.redirect('/login');
     }
     else {
@@ -137,7 +136,7 @@ app.get('/watch-list', function(req, res) {
 
 // Stock List
 app.get('/stock-list', function(req, res) {
-    if (userID == -1) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
         res.redirect('/login');
     }
     else {
@@ -152,7 +151,7 @@ app.get('/stock-list', function(req, res) {
 
 // Stock page
 app.get('/share/:company', function(req, res) {
-    if (userID == -1) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
         res.redirect('/login');
     }
     else {
