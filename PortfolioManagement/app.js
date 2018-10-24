@@ -23,6 +23,7 @@ var app = express();
 var getJSON = require('get-json');
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({extended: true});
+var userID = -1;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -30,9 +31,31 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
     res.render('index');
 });
+
+app.get('/login', function(req, res) {
+    res.render('login', {message: "", username: ""});
+});
+
+app.post('/login', urlencodedParser, function(req, res){
+    var query = "SELECT UserID, Password FROM User WHERE Username=\"" + req.body.username + "\";";
+    dbms.query(query, function(err, result, fields) {
+        if (err) throw err;
+        if(result.length == 0) {
+            res.render('login', {message: "Invalid Username", username: req.body.username})
+        }
+        else if(req.body.password != result[0]["Password"]) {
+            res.render('login', {message: "Wrong Password", username: req.body.username});
+        }
+        else {
+            userID = result[0]["UserID"];
+            res.redirect('/');
+        }
+    });
+});
+
 
 app.get('/watch-list', function(req, res){
     var query = "SELECT ShareName, Symbol FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol;";
