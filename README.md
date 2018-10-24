@@ -35,6 +35,7 @@ Or alternatively copy and paste the commands.
   - `mysql`
   - `ejs`
   - `get-json`
+  - `body-parser`
 
 #### To run the server
 Move to the `/PortfolioManagement/` directory and run the following command

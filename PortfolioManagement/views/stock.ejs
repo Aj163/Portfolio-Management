@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+        	<%= name[0].ShareName %>
+        </title>
+        <style>
+                body{background: #003300; font-family: ubuntu; color: #ffffff; padding: 30px;}
+                h1{font-size: 48px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+                h2{font-size: 32px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+                p{font-size: 16px; line-height: 0.6; text-align: center;}
+        </style>
+    </head>
+
+    <body>
+        <p style="font-size: 48px;"><%= name[0].ShareName %></p>
+        <p style="font-size: 25px">Symbol : <%= symbol %></p>
+        <p style="font-size: 20px">Current price : $
+            <% for(x in data["Time Series (Daily)"]) { %>
+                <%= data["Time Series (Daily)"][x]["1. open"] %>
+                <% break; %>
+            <% } %>        
+        </p>
+        <br>
+
+        <div style="text-align: center;">
+            <% if (inWatchList == false) { %>
+                <form action="/add" method="POST">
+                    <button name="symbol" value="<%= symbol %>">Add to Watch List</button>
+                </form>
+            <% } %>
+            <% if (inWatchList == true) { %>
+                <form action="/remove" method="POST">
+                    <button name="symbol" value="<%= symbol %>">Remove from Watch List</button>
+                </form>
+            <% } %>
+        </div>
+
+        <br>
+
+        <% var cnt = 10; %>
+        <% for(x in data["Time Series (Daily)"]) { %>
+            <% if (cnt == 0) break; %>
+            <% cnt = cnt -1; %>
+            <p><%= x %> : $<%= data["Time Series (Daily)"][x]["1. open"] %></p>
+        <% }; %>
+        <br>
+    </body>
+</html>
