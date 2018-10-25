@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>
-        	Portfolio
-        </title>
-        <style>
-                body{background: #003300; font-family: ubuntu; color: #ffffff; padding: 30px;}
-                h1{font-size: 48px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
-                p{font-size: 25px; text-align: center;}
-        </style>
+        <title>Portfolio Manager</title>
+        <link rel="stylesheet" href="/css/login.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
 
     <body>
-        <h2 style="text-align: center; font-size: 40px;">Welcome to Portfolio Management</h2>
-        <p><%= message %></p>
-        <div style="text-align: center;">
-            <form action="/login" method="POST">
-                <p>Username <input type="input" name="username", value="<%= username%>"></p>
-                <p>Password <input type="password" name="password"></p>
-                <br>
-                <input type="submit" name="login" value="Login">
-            </form>
-        </div>
+        <center>
+            <h1>Welcome to our Portfolio Manager</h1>
+            <h2>Login</h2>
+        </center>
 
-        <br>
-        <p>Don't have an account? Click <a href="/signup" style="color: white; ">here</a> to sign up for free now!</p>
+        <form action="/login" method="POST">
+            <div class="imgcontainer">
+                <img src="img_avatar.png" alt="Avatar" class="avatar">
+            </div>
+
+            <div class="container">
+                <p><%= message %></p>
+                <p for="username" style="margin-left: 35%;"><b>Username</b></p>
+                <input type="input" placeholder="Enter Username" name="username", value="<%= username%>">
+
+                <p for="password" style="margin-left: 35%;"><b>Password</b></p>
+                <input type="password" placeholder="Enter Password" name="password">
+
+                <input type="submit" name="login" value="Login">
+                <p style="text-align: center;"><a href="/signup">Not a member? Sign Up</a></p>
+            </div>
+        </form>
     </body>
 </html>
