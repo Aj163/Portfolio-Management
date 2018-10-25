@@ -33,8 +33,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-//@@ TODO: Multiple users
-// console.log(req.connection.remoteAddress);
 
 // Home Page
 app.get('/', function(req, res) {
@@ -78,7 +76,7 @@ app.get('/signup', function(req, res) {
 });
 
 
-// Authenticating user
+// Signing up
 app.post('/signup', function(req, res) {
     var query = "SELECT Username FROM User WHERE Username=\"" + req.body.username + "\";";
     dbms.query(query, function(err, result, fields) {
@@ -120,6 +118,13 @@ app.post('/signup', function(req, res) {
 });
 
 
+// Logout
+app.get('/logout', function(req, res) {
+    userIDs[req.connection.remoteAddress] = undefined;
+    res.redirect('/login');
+});
+
+
 // Watch List
 app.get('/watch-list', function(req, res) {
     if (userIDs[req.connection.remoteAddress] == undefined) {
@@ -156,7 +161,9 @@ app.get('/share/:company', function(req, res) {
         res.redirect('/login');
     }
     else {
-        getJSON('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=' + req.params.company + '&apikey=ZQBDTSMTGR1O70Q9', function(err, data) {
+        getJSON('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + 
+            req.params.company + '&interval=1min&apikey=ZQBDTSMTGR1O70Q9', function(err, data) {
+
             if (err) throw err;
             if (data["Error Message"]) {
                 res.render('404');
@@ -177,6 +184,17 @@ app.get('/share/:company', function(req, res) {
     }
 });
 
+
+// Buy share
+app.post('/buy', function(req, res) {
+    var now = new Date();
+    var timestamp = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() + " " + 
+        now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+    var query = "INSERT INTO BuyShare VALUES (\"" + timestamp + "\", " + 
+        userIDs[req.connection.remoteAddress] + ", " + req.body.quantity + 
+        ", " + req.body.price + ", \"" + req.body.symbol + "\");";
+    console.log(query);
+});
 
 // Add to watch list
 app.post('/add', function(req, res) {

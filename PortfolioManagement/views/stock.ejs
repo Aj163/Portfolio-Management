@@ -13,11 +13,14 @@
     </head>
 
     <body>
+        <p style="text-align: right;"><a href="/logout" style="color: white">
+            Logout</a></p>
         <p style="font-size: 48px;"><%= name[0].ShareName %></p>
         <p style="font-size: 25px">Symbol : <%= symbol %></p>
         <p style="font-size: 20px">Current price : $
-            <% for(x in data["Time Series (Daily)"]) { %>
-                <%= data["Time Series (Daily)"][x]["1. open"] %>
+            <% for(x in data["Time Series (1min)"]) { %>
+                <% var price = data["Time Series (1min)"][x]["4. close"]; %>
+                <%= data["Time Series (1min)"][x]["4. close"] %>
                 <% break; %>
             <% } %>        
         </p>
@@ -34,16 +37,23 @@
                     <button name="symbol" value="<%= symbol %>">Remove from Watch List</button>
                 </form>
             <% } %>
+
+            <br>
+            <br>
+            <form action="/buy" method="POST">
+                <input type="number" name="quantity" min="1" value="0">&nbsp;
+                <input type="hidden" name="symbol" value="<%= symbol %>">
+                <input type="hidden" name="price" value="<%= price %>">
+                <input type="submit" name="buy" value="Buy">
+            </form>
+
+            <br>
+            <form action="/sell" method="POST">
+                <input type="number" name="quantity" min="1" value="0">&nbsp;
+                <input type="hidden" name="symbol" value="<%= symbol %>">
+                <input type="hidden" name="price" value="<%= price %>">
+                <input type="submit" name="sell" value="Sell">
+            </form>
         </div>
-
-        <br>
-
-        <% var cnt = 10; %>
-        <% for(x in data["Time Series (Daily)"]) { %>
-            <% if (cnt == 0) break; %>
-            <% cnt = cnt -1; %>
-            <p><%= x %> : $<%= data["Time Series (Daily)"][x]["1. open"] %></p>
-        <% }; %>
-        <br>
     </body>
 </html>
