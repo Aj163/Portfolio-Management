@@ -51,7 +51,7 @@
 
             <br>
             <form action="/sell" method="POST">
-                <input type="number" name="quantity" min="1" value="0">&nbsp;
+                <input type="number" name="quantity" min="1" max="<%= current %>" value="0">&nbsp;
                 <input type="hidden" name="symbol" value="<%= symbol %>">
                 <input type="hidden" name="price" value="<%= price %>">
                 <input type="submit" name="sell" value="Sell">

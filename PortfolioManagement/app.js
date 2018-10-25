@@ -216,25 +216,30 @@ app.get('/share/:company', function(req, res) {
 // Buy share
 app.post('/buy', function(req, res) {
     
-    var now = new Date();
-    var timestamp = now.toISOString().substr(0, 10) + " " + 
-        now.toISOString().substr(11, 8);
+    if(req.body.quantity == '') {
+        res.redirect('/share/' + req.body.symbol);
+    }
+    else {
+        var now = new Date();
+        var timestamp = now.toISOString().substr(0, 10) + " " + 
+            now.toISOString().substr(11, 8);
 
-    var buyQuery = "INSERT INTO BuyShare VALUES (\"" + timestamp + "\", " + 
-        userIDs[req.connection.remoteAddress] + ", " + req.body.quantity + 
-        ", " + req.body.price + ", \"" + req.body.symbol + "\");";
+        var buyQuery = "INSERT INTO BuyShare VALUES (\"" + timestamp + "\", " + 
+            userIDs[req.connection.remoteAddress] + ", " + req.body.quantity + 
+            ", " + req.body.price + ", \"" + req.body.symbol + "\");";
 
-    dbms.query(buyQuery, function(err, result, fields) {
-        if (err) throw err;
-        var historyQuery = "INSERT INTO UserHistory VALUES (" + userIDs[req.connection.remoteAddress]
-             + ", " + req.body.quantity + ", \"" + timestamp + "\", " + req.body.price + ", 0, \"" + 
-            req.body.symbol + "\");";
-
-        dbms.query(historyQuery, function(err, result, fields) {
+        dbms.query(buyQuery, function(err, result, fields) {
             if (err) throw err;
-            res.redirect('/share/' + req.body.symbol);
+            var historyQuery = "INSERT INTO UserHistory VALUES (" + userIDs[req.connection.remoteAddress]
+                 + ", " + req.body.quantity + ", \"" + timestamp + "\", " + req.body.price + ", 0, \"" + 
+                req.body.symbol + "\");";
+
+            dbms.query(historyQuery, function(err, result, fields) {
+                if (err) throw err;
+                res.redirect('/share/' + req.body.symbol);
+            });
         });
-    });
+    }
 });
 
 // Add to watch list
