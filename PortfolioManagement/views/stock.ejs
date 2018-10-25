@@ -25,7 +25,9 @@
             <% } %>        
         </p>
         <br>
-
+        <p style="font-size: 25px;">You currently have <%= current %> 
+            share<% if (current != 1) { %>s<% } %></p>
+        <br>
         <div style="text-align: center;">
             <% if (inWatchList == false) { %>
                 <form action="/add" method="POST">

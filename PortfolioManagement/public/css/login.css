@@ -26,12 +26,12 @@ input[type=submit] {
 
 .imgcontainer {
     text-align: center;
-    margin: 24px 0 12px 0;
+    margin: 24px 0 -80px 0;
 }
 
 img.avatar {
-    width: 40%;
-    border-radius: 50%;
+    width: 20%;
+    border-radius: 30%;
 }
 
 .container {

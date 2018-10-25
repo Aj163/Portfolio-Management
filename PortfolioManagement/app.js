@@ -173,10 +173,38 @@ app.get('/share/:company', function(req, res) {
                 dbms.query(query, function(err, resultname, fields) {
                     if (err) throw err;
 
-                    var existsQuery = "SELECT ShareSymbol FROM WatchList WHERE UserID=3 AND ShareSymbol=\"" + req.params.company + "\";";
+                    var existsQuery = "SELECT ShareSymbol FROM WatchList WHERE UserID=" + 
+                        userIDs[req.connection.remoteAddress] + " AND ShareSymbol=\"" + 
+                        req.params.company + "\";";
+
                     dbms.query(existsQuery, function(err, result, fields) {
                         if (err) throw err;
-                        res.render('stock', {data: data, name: resultname, symbol: req.params.company, inWatchList: result.length > 0});
+
+                        // Query number of existing shares
+                        var bought = "SELECT SUM(Quantity) AS bought FROM UserHistory WHERE " + 
+                            "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=0 AND " + 
+                            "ShareSymbol=\"" + req.params.company + "\";";
+
+                        dbms.query(bought, function(err, bght, fields) {
+
+                            if (err) throw err;
+                            var sold = "SELECT SUM(Quantity) AS sold FROM UserHistory WHERE " + 
+                                "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=1 AND " + 
+                                "ShareSymbol=\"" + req.params.company + "\";";
+
+                            dbms.query(sold, function(err, sld, fields) {
+
+                                if (err) throw err;
+                                if (sld[0]["sold"] == null) {
+                                    sld[0]["sold"] = 0;   
+                                }
+
+                                var current = bght[0]["bought"] - sld[0]["sold"];
+                                res.render('stock', {data: data, name: resultname, symbol: 
+                                    req.params.company, inWatchList: result.length > 0, current: current});
+                            });
+                        });
+                        
                     });
                 });
             }
@@ -187,18 +215,33 @@ app.get('/share/:company', function(req, res) {
 
 // Buy share
 app.post('/buy', function(req, res) {
+    
     var now = new Date();
-    var timestamp = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate() + " " + 
-        now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-    var query = "INSERT INTO BuyShare VALUES (\"" + timestamp + "\", " + 
+    var timestamp = now.toISOString().substr(0, 10) + " " + 
+        now.toISOString().substr(11, 8);
+
+    var buyQuery = "INSERT INTO BuyShare VALUES (\"" + timestamp + "\", " + 
         userIDs[req.connection.remoteAddress] + ", " + req.body.quantity + 
         ", " + req.body.price + ", \"" + req.body.symbol + "\");";
-    console.log(query);
+
+    dbms.query(buyQuery, function(err, result, fields) {
+        if (err) throw err;
+        var historyQuery = "INSERT INTO UserHistory VALUES (" + userIDs[req.connection.remoteAddress]
+             + ", " + req.body.quantity + ", \"" + timestamp + "\", " + req.body.price + ", 0, \"" + 
+            req.body.symbol + "\");";
+
+        dbms.query(historyQuery, function(err, result, fields) {
+            if (err) throw err;
+            res.redirect('/share/' + req.body.symbol);
+        });
+    });
 });
 
 // Add to watch list
 app.post('/add', function(req, res) {
-    var query = "INSERT INTO WatchList VALUES(3, \"" + req.body.symbol + "\");";
+    var query = "INSERT INTO WatchList VALUES(" + userIDs[req.connection.remoteAddress] + ", \"" + 
+        req.body.symbol + "\");";
+
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
         res.redirect('watch-list');
@@ -208,7 +251,7 @@ app.post('/add', function(req, res) {
 
 // Remove from watch list
 app.post('/remove', function(req, res) {
-    var query = "DELETE FROM WatchList WHERE UserID=3 AND ShareSymbol=\"" + req.body.symbol + "\";";
+    var query = "DELETE FROM WatchList WHERE UserID=" + userIDs[req.connection.remoteAddress] + " AND ShareSymbol=\"" + req.body.symbol + "\";";
     dbms.query(query, function(err, result, fields) {
         if (err) throw err;
         res.redirect('watch-list');
