@@ -53,18 +53,19 @@
         <div id="tester" style="width:600px;height:250px;">
         </div>
 
-</div>
+        <script>
+
+
+
+var X = [];
+<% xdata.forEach(function(item) {  %>
+    <% console.log(item); %>
+    X.push("<%= item %>");
+<% }); %>
+var Y = [<%= y %>];
+Plotly.newPlot('tester', [{x: X, y: Y, type: 'scatter'}]);
+            
+        </script>
+
     </body>
-
-    <script>
-        TESTER = document.getElementById('tester');
-        console.log('Hi');
-        Plotly.plot( TESTER, [{
-            x: [1, 2],
-            y: [2, 3]], {margin: {t: 0} } );
-    </script>
 </html>
-
-
-
-

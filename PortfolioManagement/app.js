@@ -301,11 +301,11 @@ app.get('/share/:company', function(req, res) {
                                 var xdata = [], y = [];
                                 for(x in data["Time Series (1min)"]) {
                                     xdata.push(x);
-                                    y.push(data["Time Series (1min)"][x]["4. close"]);
+                                    y.push(Number(data["Time Series (1min)"][x]["4. close"]));
                                 }
                                 res.render('stock', {data: data, name: resultname, symbol: 
                                     req.params.company, inWatchList: result.length > 0, current: current, 
-                                    invested: Number(bght[0]["invested"]), returns: Number(sld[0]["returns"]), xdata: xdata, y: y});
+                                    invested: Number(bght[0]["invested"]), returns: Number(sld[0]["returns"]), Plotly: plotly, xdata: xdata, y: y});
                             });
                         });
                         
