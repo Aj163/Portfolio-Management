@@ -242,6 +242,37 @@ app.post('/buy', function(req, res) {
     }
 });
 
+
+// Sell share
+app.post('/sell', function(req, res) {
+    
+    if(req.body.quantity == '') {
+        res.redirect('/share/' + req.body.symbol);
+    }
+    else {
+        var now = new Date();
+        var timestamp = now.toISOString().substr(0, 10) + " " + 
+            now.toISOString().substr(11, 8);
+
+        var sellQuery = "INSERT INTO SellShare VALUES (\"" + timestamp + "\", " + 
+            userIDs[req.connection.remoteAddress] + ", " + req.body.quantity + 
+            ", " + req.body.price + ", \"" + req.body.symbol + "\");";
+
+        dbms.query(sellQuery, function(err, result, fields) {
+            if (err) throw err;
+            var historyQuery = "INSERT INTO UserHistory VALUES (" + userIDs[req.connection.remoteAddress]
+                 + ", " + req.body.quantity + ", \"" + timestamp + "\", " + req.body.price + ", 1, \"" + 
+                req.body.symbol + "\");";
+
+            dbms.query(historyQuery, function(err, result, fields) {
+                if (err) throw err;
+                res.redirect('/share/' + req.body.symbol);
+            });
+        });
+    }
+});
+
+
 // Add to watch list
 app.post('/add', function(req, res) {
     var query = "INSERT INTO WatchList VALUES(" + userIDs[req.connection.remoteAddress] + ", \"" + 
