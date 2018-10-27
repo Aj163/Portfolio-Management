@@ -17,11 +17,6 @@ CREATE TABLE Shares (
 	Information VARCHAR(2000)
 );
 
-CREATE TABLE Currency (
-	Abbreviation VARCHAR(50) PRIMARY KEY,
-	CurrencyName VARCHAR(100) NOT NULL,
-);
-
 -- ###########################################################################
 
 CREATE TABLE ShareHistory (
@@ -55,14 +50,6 @@ CREATE TABLE SellShare (
 	CONSTRAINT primeKey PRIMARY KEY (UserID, TimeLog)
 );
 
--- CREATE TABLE CurrentShares (
--- 	UserID INT REFERENCES User(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
--- 	Quantity INT CHECK (Quantity > 0),
--- 	Invested FLOAT NOT NULL,
--- 	ShareSymbol VARCHAR(50) REFERENCES Shares(Symbol) ON DELETE CASCADE ON UPDATE CASCADE,
--- 	CONSTRAINT primeKey PRIMARY KEY (UserID, ShareSymbol)
--- );
-
 -- BuySellFlag = 0 => Buy
 -- BuySellFlag = 1 => Sell
 CREATE TABLE UserHistory (
@@ -75,28 +62,6 @@ CREATE TABLE UserHistory (
 	CONSTRAINT primeKey PRIMARY KEY (UserID, TimeLog)
 );
 
-CREATE TABLE CurrencyHistory (
-	Abbreviation VARCHAR(50) REFERENCES Currency(Abbreviation) ON DELETE CASCADE ON UPDATE CASCADE,
-	TimeLog TIMESTAMP,
-	PriceInUSD FLOAT(7, 2) NOT NULL CHECK (PriceInUSD > 0),
-	CONSTRAINT primeKey PRIMARY KEY (Abbreviation, TimeLog)
-);
-
-CREATE TABLE CurrencyExchange (
-	TimeLog TIMESTAMP,
-	UserID INT REFERENCES User(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-	FromCurrency VARCHAR(50) REFERENCES Currency(Abbreviation) ON DELETE CASCADE ON UPDATE CASCADE,
-	ToCurrency VARCHAR(50) REFERENCES Currency(Abbreviation) ON DELETE CASCADE ON UPDATE CASCADE,
-	FromAmount FLOAT(7, 2) NOT NULL CHECK (FromAmount > 0),
-	CONSTRAINT primeKey PRIMARY KEY (UserID, TimeLog)
-);
-
-CREATE TABLE UserCurrencies (
-	UserID INT REFERENCES User(UserID) ON DELETE CASCADE ON UPDATE CASCADE,
-	CurrencyName VARCHAR(50) REFERENCES Currency(Abbreviation) ON DELETE CASCADE ON UPDATE CASCADE,
-	Amount FLOAT(7, 2) NOT NULL CHECK (Amount > 0)
-);
-
 -- ###########################################################################
 -- Deleting all tables
 
@@ -107,8 +72,4 @@ CREATE TABLE UserCurrencies (
 -- DROP TABLE WatchList;
 -- DROP TABLE BuyShare;
 -- DROP TABLE SellShare;
--- DROP TABLE CurrentShares;
 -- DROP TABLE UserHistory;
--- DROP TABLE CurrencyHistory;
--- DROP TABLE CurrencyExchange;
--- DROP TABLE UserCurrencies;
