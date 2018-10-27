@@ -25,6 +25,7 @@ var app = express();
 var getJSON = require('get-json');
 var bodyParser = require('body-parser');
 var userIDs = {};
+var plotly = require('plotly')('portfolioRocks', 'bep3vNK5mmXCFdFb9zBa');
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
@@ -297,9 +298,14 @@ app.get('/share/:company', function(req, res) {
                                 if (err) throw err;
 
                                 var current = Number(bght[0]["bought"] - sld[0]["sold"]);
+                                var xdata = [], y = [];
+                                for(x in data["Time Series (1min)"]) {
+                                    xdata.push(x);
+                                    y.push(data["Time Series (1min)"][x]["4. close"]);
+                                }
                                 res.render('stock', {data: data, name: resultname, symbol: 
                                     req.params.company, inWatchList: result.length > 0, current: current, 
-                                    invested: Number(bght[0]["invested"]), returns: Number(sld[0]["returns"])});
+                                    invested: Number(bght[0]["invested"]), returns: Number(sld[0]["returns"]), xdata: xdata, y: y});
                             });
                         });
                         
