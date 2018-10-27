@@ -89,12 +89,12 @@ app.post('/signup', function(req, res) {
             res.render('signup', {message: "Username exists", username: req.body.username, 
                 firstname: req.body.firstname, lastname: req.body.lastname})
         }
-        else if(req.body.password != req.body.confirm_password) {
-            res.render('signup', {message: "Passwords don't match", username: req.body.username, 
-                firstname: req.body.firstname, lastname: req.body.lastname})
-        }
         else if(req.body.firstname == "") {
             res.render('signup', {message: "First name is empty", username: req.body.username, 
+                firstname: req.body.firstname, lastname: req.body.lastname})
+        }
+        else if(req.body.password != req.body.confirm_password) {
+            res.render('signup', {message: "Passwords don't match", username: req.body.username, 
                 firstname: req.body.firstname, lastname: req.body.lastname})
         }
         else {
@@ -118,6 +118,53 @@ app.post('/signup', function(req, res) {
 });
 
 
+// Update Profile
+app.post('/save', function(req, res) {
+    var query = "SELECT Username FROM User WHERE Username=\"" + req.body.username + "\" AND " + 
+        "(NOT (UserID=" + userIDs[req.connection.remoteAddress] + "));";
+    dbms.query(query, function(err, result, fields) {
+        if (err) throw err;
+        var currentPasswordQuery = "SELECT Password FROM User WHERE UserID=" + 
+            userIDs[req.connection.remoteAddress] + ";";
+
+        dbms.query(currentPasswordQuery, function(err, pass, fields) {
+            if (err) throw err;
+            if(req.body.username == "") {
+                res.render('update-profile', {message: "Username is empty", username: req.body.username, 
+                    firstname: req.body.firstname, lastname: req.body.lastname})
+            }
+            else if(result.length == 1) {
+                res.render('update-profile', {message: "Username exists", username: req.body.username, 
+                    firstname: req.body.firstname, lastname: req.body.lastname})
+            }
+            else if(req.body.firstname == "") {
+                res.render('update-profile', {message: "First name is empty", username: req.body.username, 
+                    firstname: req.body.firstname, lastname: req.body.lastname})
+            }
+            else if(req.body.old_password != pass[0]["Password"]) {
+                res.render('update-profile', {message: "Old Password is incorrect", username: req.body.username, 
+                    firstname: req.body.firstname, lastname: req.body.lastname})
+            }
+            else if(req.body.new_password != req.body.confirm_password) {
+                res.render('update-profile', {message: "Passwords don't match", username: req.body.username, 
+                    firstname: req.body.firstname, lastname: req.body.lastname})
+            }
+            else {
+                var updateQuery="UPDATE User SET Username=\"" + req.body.username + 
+                    "\", Password=\"" + req.body.new_password + "\", FirstName=\"" + 
+                    req.body.firstname + "\", LastName=\"" + req.body.lastname + "\" WHERE " + 
+                    "UserID=" + userIDs[req.connection.remoteAddress] + ";";
+
+                dbms.query(updateQuery, function(err, result, fields) {
+                    if (err) throw err;
+                    res.redirect('/profile');
+                });
+            }
+        });
+    });
+});
+
+
 // Logout
 app.get('/logout', function(req, res) {
     userIDs[req.connection.remoteAddress] = undefined;
@@ -131,7 +178,8 @@ app.get('/watch-list', function(req, res) {
         res.redirect('/login');
     }
     else {
-        var query = "SELECT ShareName, Symbol FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol;";
+        var query = "SELECT ShareName, Symbol FROM WatchList, Shares WHERE Shares.Symbol=WatchList.ShareSymbol" + 
+        " AND UserID=" + userIDs[req.connection.remoteAddress] + ";";
         dbms.query(query, function(err, result, fields) {
             if (err) throw err;
             res.render('watch_list', {data: result});
@@ -162,13 +210,35 @@ app.get('/profile', function(req, res) {
                 if (err) throw err;
 
                 var current = Number(bght[0]["bought"] - sld[0]["sold"]);
-                res.render('profile', {current: current, invested: Number(bght[0]["invested"]), 
-                    returns: Number(sld[0]["returns"])});
+                var userInfoQuery = "SELECT Username, FirstName, LastName FROM User WHERE" + 
+                    " UserID=" + userIDs[req.connection.remoteAddress] + ";";
+
+                dbms.query(userInfoQuery, function(err, userInfo, fields) {
+                    res.render('profile', {current: current, invested: Number(bght[0]["invested"]), 
+                        returns: Number(sld[0]["returns"]), username: userInfo[0]["Username"], 
+                        firstname: userInfo[0]["FirstName"], lastname: userInfo[0]["LastName"]});
+                });
             });
         });
     }
 });
 
+
+// Update Profile
+app.get('/update-profile', function(req, res) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
+        res.redirect('/login');
+    }
+    else {
+        var userQuery = "SELECT Username, FirstName, LastName FROM User WHERE UserID=" + 
+            userIDs[req.connection.remoteAddress] + ";";
+        dbms.query(userQuery, function(err, result, fields) {
+            if (err) throw err;
+            res.render('update-profile', {username: result[0]["Username"], firstname: result[0]["FirstName"], 
+                lastname: result[0]["LastName"], message: ""});
+        });
+    }
+});
 
 // Stock List
 app.get('/stock-list', function(req, res) {

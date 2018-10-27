@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>
-        	My Profile
-        </title>
+        <title>Portfolio Manager</title>
         <style>
                 body{background: #003300; font-family: ubuntu; color: #ffffff; padding: 30px;}
                 h1{font-size: 48px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
@@ -16,7 +14,10 @@
         <p style="text-align: right;"><a href="/logout" style="color: white">
             Logout</a></p>
         <p style="font-size: 48px;">My Profile</p>
-        
+        <br>
+        <p style="font-size: 20px;">Username : <%= username %></p>
+        <p style="font-size: 20px;">Name : <%= firstname %> <%= lastname %></p>
+        <br>
         <p style="font-size: 25px;">You currently have a total of <%= Number(current).toLocaleString() %> 
             share<% if (current != 1) { %>s<% } %></p>
         <br>

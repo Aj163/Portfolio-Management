@@ -4,11 +4,10 @@
     <title>Portfolio Manager</title>
 
     <body>
-        <form action="/signup" method="POST" style="border:1px solid #ccc">
+        <form action="/save" method="POST" style="border:1px solid #ccc">
             <div class="container">
                 <center>
-                    <h1>Sign Up</h1>
-                    <p>Please fill in this form to create an account.</p>
+                    <h1>Update Profile</h1>
                 </center>
                 <hr>
                 <center>
@@ -31,17 +30,22 @@
                     <label for="lastname"><b>Last Name</b></label>
                     <br>
                     <input type="input" placeholder="Enter your last name" name="lastname", value="<%= lastname %>">
+
                     <br><br>
-                    <label for="password"><b>Password</b></label>
+                    <label for="old_password" style="margin-right: 21%;"><b>Old Password</b></label>
                     <br>
-                    <input type="password" placeholder="Enter Password" name="password">
+                    <input type="password" placeholder="Enter Old Password" name="old_password">
+                    <br><br>
+                    <label for="new_password" style="margin-right: 21%;"><b>New Password</b></label>
+                    <br>
+                    <input type="password" placeholder="Enter New Password" name="new_password">
                     <br><br>
                     <label for="confirm_password" style="margin-right: 18%;"><b>Confirm Password</b></label>
                     <br>
                     <input type="password" placeholder="Repeat the password" name="confirm_password">
                 </center>
                 <br><br>
-                <input type="submit" name="Signup" value="Sign Up">
+                <input type="submit" name="save" value="Save">
             </div>
         </form>
     </body>
