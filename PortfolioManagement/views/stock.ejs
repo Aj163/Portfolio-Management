@@ -20,13 +20,18 @@
         <p style="font-size: 20px">Current price : $
             <% for(x in data["Time Series (1min)"]) { %>
                 <% var price = data["Time Series (1min)"][x]["4. close"]; %>
-                <%= data["Time Series (1min)"][x]["4. close"] %>
+                <%= Number((1.0*price).toFixed(2)).toLocaleString() %>
                 <% break; %>
             <% } %>        
         </p>
-        <br>
-        <p style="font-size: 25px;">You currently have <%= current %> 
+        
+        <p style="font-size: 25px;">You currently have <%= Number(current).toLocaleString() %> 
             share<% if (current != 1) { %>s<% } %></p>
+        <br>
+        <p style="font-size: 20px;">Net Worth : $ <%= Number((current*price).toFixed(2)).toLocaleString() %></p>
+        <p style="font-size: 20px;">Total Invested : $ <%= Number(invested.toFixed(2)).toLocaleString() %></p>
+        <p style="font-size: 20px;">Total Returns : $ <%= Number(returns.toFixed(2)).toLocaleString() %></p>
+        <p style="font-size: 20px;">Total Profit/Loss (Including Net Worth) : $ <%= Number((current*price + returns - invested).toFixed(2)).toLocaleString() %></p>
         <br>
         <div style="text-align: center;">
             <% if (inWatchList == false) { %>

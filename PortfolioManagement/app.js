@@ -140,6 +140,36 @@ app.get('/watch-list', function(req, res) {
 });
 
 
+// Profile
+app.get('/profile', function(req, res) {
+    if (userIDs[req.connection.remoteAddress] == undefined) {
+        res.redirect('/login');
+    }
+    else {
+        // Query number of existing shares
+        var bought = "SELECT SUM(Quantity) AS bought, SUM(Price*Quantity) AS invested "
+            + "FROM UserHistory WHERE UserID=" + userIDs[req.connection.remoteAddress] + 
+            " AND BuySellFlag=0;";
+
+        dbms.query(bought, function(err, bght, fields) {
+
+            if (err) throw err;
+            var sold = "SELECT SUM(Quantity) AS sold, SUM(Price*Quantity) AS returns FROM UserHistory WHERE " + 
+                "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=1;";
+
+            dbms.query(sold, function(err, sld, fields) {
+
+                if (err) throw err;
+
+                var current = Number(bght[0]["bought"] - sld[0]["sold"]);
+                res.render('profile', {current: current, invested: Number(bght[0]["invested"]), 
+                    returns: Number(sld[0]["returns"])});
+            });
+        });
+    }
+});
+
+
 // Stock List
 app.get('/stock-list', function(req, res) {
     if (userIDs[req.connection.remoteAddress] == undefined) {
@@ -181,27 +211,25 @@ app.get('/share/:company', function(req, res) {
                         if (err) throw err;
 
                         // Query number of existing shares
-                        var bought = "SELECT SUM(Quantity) AS bought FROM UserHistory WHERE " + 
-                            "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=0 AND " + 
-                            "ShareSymbol=\"" + req.params.company + "\";";
+                        var bought = "SELECT SUM(Quantity) AS bought, SUM(Price*Quantity) AS invested "
+                            + "FROM UserHistory WHERE UserID=" + userIDs[req.connection.remoteAddress] + 
+                            " AND BuySellFlag=0 AND ShareSymbol=\"" + req.params.company + "\";";
 
                         dbms.query(bought, function(err, bght, fields) {
 
                             if (err) throw err;
-                            var sold = "SELECT SUM(Quantity) AS sold FROM UserHistory WHERE " + 
+                            var sold = "SELECT SUM(Quantity) AS sold, SUM(Price*Quantity) AS returns FROM UserHistory WHERE " + 
                                 "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=1 AND " + 
                                 "ShareSymbol=\"" + req.params.company + "\";";
 
                             dbms.query(sold, function(err, sld, fields) {
 
                                 if (err) throw err;
-                                if (sld[0]["sold"] == null) {
-                                    sld[0]["sold"] = 0;   
-                                }
 
-                                var current = bght[0]["bought"] - sld[0]["sold"];
+                                var current = Number(bght[0]["bought"] - sld[0]["sold"]);
                                 res.render('stock', {data: data, name: resultname, symbol: 
-                                    req.params.company, inWatchList: result.length > 0, current: current});
+                                    req.params.company, inWatchList: result.length > 0, current: current, 
+                                    invested: Number(bght[0]["invested"]), returns: Number(sld[0]["returns"])});
                             });
                         });
                         

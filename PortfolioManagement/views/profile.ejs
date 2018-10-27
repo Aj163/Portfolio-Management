@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+        	My Profile
+        </title>
+        <style>
+                body{background: #003300; font-family: ubuntu; color: #ffffff; padding: 30px;}
+                h1{font-size: 48px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+                h2{font-size: 32px; text-transform: uppercase; letter-spacing: 2px; text-align: center;}
+                p{font-size: 16px; line-height: 0.6; text-align: center;}
+        </style>
+    </head>
+
+    <body>
+        <p style="text-align: right;"><a href="/logout" style="color: white">
+            Logout</a></p>
+        <p style="font-size: 48px;">My Profile</p>
+        
+        <p style="font-size: 25px;">You currently have a total of <%= Number(current).toLocaleString() %> 
+            share<% if (current != 1) { %>s<% } %></p>
+        <br>
+
+        <p style="font-size: 20px;">Total Invested : $ <%= Number(invested.toFixed(2)).toLocaleString() %></p>
+        <p style="font-size: 20px;">Total Returns : $ <%= Number(returns.toFixed(2)).toLocaleString() %></p>
+        
+    </body>
+</html>
