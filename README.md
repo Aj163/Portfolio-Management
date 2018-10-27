@@ -23,7 +23,7 @@ $ mysql -u admin -p
 Enter password as `admin` <br>
 Run all the commands in `/SQL_Queries/DatabaseDefinition.sql` by running
 ```MySQL
-mysql> source /SQL_Queries/DatabaseDefinition.sql
+mysql> source /DatabaseDefinition.sql
 ```
 Or alternatively copy and paste the commands.
 
