@@ -41,7 +41,7 @@ app.get('/', function(req, res) {
         res.redirect('/login');
     }
     else {
-        res.render('index');
+        res.redirect('/watch-list');
     }
 });
 
