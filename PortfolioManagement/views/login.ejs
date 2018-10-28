@@ -18,7 +18,12 @@
             </div>
 
             <div class="container">
-                <p style="text-align: center;"><%= message %></p>
+                    <% if (message!="") {%>
+                        <div class="alert">
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            <%= message %>
+                        </div>
+                    <%}%>
                 <p for="username" style="margin-left: 35%;"><b>Username</b></p>
                 <input type="input" placeholder="Enter Username" name="username", value="<%= username%>">
 

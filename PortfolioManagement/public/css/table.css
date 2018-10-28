@@ -36,6 +36,12 @@ body {
 
 .container td:first-child { color: white; }
 
+h1{
+    margin-top: 5%;
+    color:white;
+    text-align: center;
+}
+
 
 
 

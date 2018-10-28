@@ -197,13 +197,13 @@ app.get('/profile', function(req, res) {
     else {
         // Query number of existing shares
         var bought = "SELECT SUM(Quantity) AS bought, SUM(Price*Quantity) AS invested "
-            + "FROM UserHistory WHERE UserID=" + userIDs[req.connection.remoteAddress] + 
+            + "FROM UserHistory WHERE UserID=" + userIDs[req.connection.remoteAddress] +
             " AND BuySellFlag=0;";
 
         dbms.query(bought, function(err, bght, fields) {
 
             if (err) throw err;
-            var sold = "SELECT SUM(Quantity) AS sold, SUM(Price*Quantity) AS returns FROM UserHistory WHERE " + 
+            var sold = "SELECT SUM(Quantity) AS sold, SUM(Price*Quantity) AS returns FROM UserHistory WHERE " +
                 "UserID=" + userIDs[req.connection.remoteAddress] + " AND BuySellFlag=1;";
 
             dbms.query(sold, function(err, sld, fields) {
@@ -211,12 +211,12 @@ app.get('/profile', function(req, res) {
                 if (err) throw err;
 
                 var current = Number(bght[0]["bought"] - sld[0]["sold"]);
-                var userInfoQuery = "SELECT Username, FirstName, LastName FROM User WHERE" + 
+                var userInfoQuery = "SELECT Username, FirstName, LastName FROM User WHERE" +
                     " UserID=" + userIDs[req.connection.remoteAddress] + ";";
 
                 dbms.query(userInfoQuery, function(err, userInfo, fields) {
-                    res.render('profile', {current: current, invested: Number(bght[0]["invested"]), 
-                        returns: Number(sld[0]["returns"]), username: userInfo[0]["Username"], 
+                    res.render('profile', {current: current, invested: Number(bght[0]["invested"]),
+                        returns: Number(sld[0]["returns"]), username: userInfo[0]["Username"],
                         firstname: userInfo[0]["FirstName"], lastname: userInfo[0]["LastName"]});
                 });
             });

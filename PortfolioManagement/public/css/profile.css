@@ -1,4 +1,4 @@
-.white-box { width: 70%; height: 82%; margin-top: 50px; margin-left: auto; margin-right: auto;
+.white-box { width: 40%; height: 60%;margin-left: auto; margin-right: auto;
 background: rgba(255,255,255,0.9);
 padding: 20px;
 -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.15);
@@ -9,6 +9,7 @@ box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 -ms-border-radius: 5px;
 -o-border-radius: 5px;
 border-radius: 5px;
+margin-top : 5%;
 }
 
 body {
@@ -18,20 +19,6 @@ body {
 }
 
 .container {
-    margin-top:5%;
-    margin-left:10%;
+    margin-left:25%;
 }
 
-.watchlist {
-    background-color: #FF8C00;
-    margin-left:2%;
-    cursor: pointer;
-    border-radius: 10%;
-    font-size: 20px;
-
-}
-
-input[type=submit] {
-    border-radius: 10%;
-    font-size: 16px;
-}
